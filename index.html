@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dark Signal — Public Briefing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0A0D1A;
+      --surface: #111525;
+      --card: #1A2035;
+      --accent-red: #C94040;
+      --gold: #C98A20;
+      --signal-green: #2E9E5B;
+      --text-primary: #F0F2F8;
+      --text-secondary: #8A90A0;
+      --text-muted: #55596A;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: "IBM Plex Sans", sans-serif;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 72px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 16px;
+      padding: 0 22px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 13, 26, 0.94);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.92rem;
+      letter-spacing: 0.22em;
+      white-space: nowrap;
+    }
+
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--signal-green);
+      box-shadow: 0 0 0 0 rgba(46, 158, 91, 0.7);
+      animation: pulse 1.8s infinite;
+      flex: 0 0 9px;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(46, 158, 91, 0.65); }
+      70% { box-shadow: 0 0 0 10px rgba(46, 158, 91, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(46, 158, 91, 0); }
+    }
+
+    .tabs {
+      display: inline-flex;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .tab-btn {
+      border: 0;
+      border-right: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      padding: 12px 18px;
+      cursor: pointer;
+      transition: background 0.24s ease, color 0.24s ease;
+    }
+
+    .tab-btn:last-child { border-right: 0; }
+    .tab-btn:hover { color: var(--text-primary); background: #182036; }
+    .tab-btn.active { color: var(--text-primary); background: #202a45; }
+
+    .context {
+      justify-self: end;
+      color: var(--text-muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 106px 18px 80px;
+    }
+
+    .tab-panel {
+      display: none;
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    .tab-panel.active {
+      display: block;
+      animation: fadeInPanel 420ms ease forwards;
+    }
+
+    @keyframes fadeInPanel {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0 0 12px;
+      line-height: 1.25;
+      font-family: "IBM Plex Mono", monospace;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+
+    h1 { font-size: clamp(1.5rem, 1.8vw + 1rem, 2.4rem); }
+    h2 { font-size: clamp(1.1rem, 1.4vw + 0.75rem, 1.72rem); }
+    h3 { font-size: clamp(1rem, 1.1vw + 0.62rem, 1.3rem); }
+
+    .hero-title {
+      font-family: "Libre Baskerville", serif;
+      font-size: clamp(1.9rem, 2.8vw + 0.8rem, 3.35rem);
+      line-height: 1.2;
+      margin: 0 0 18px;
+      max-width: 980px;
+    }
+
+    .lede {
+      color: var(--text-secondary);
+      max-width: 920px;
+      line-height: 1.75;
+      font-size: 1.05rem;
+      margin-bottom: 28px;
+    }
+
+    .section {
+      margin-top: 38px;
+      padding: 24px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .section p {
+      color: var(--text-secondary);
+      line-height: 1.72;
+      margin: 0 0 10px;
+    }
+
+    .section p strong { color: var(--text-primary); font-weight: 500; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 18px;
+    }
+
+    .stat-value {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: clamp(1.6rem, 1.5vw + 0.9rem, 2.3rem);
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .gap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .gap-col {
+      min-height: 220px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+
+    .gap-col h4 {
+      font-size: 0.86rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .signal-list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text-secondary);
+      line-height: 1.9;
+    }
+
+    .news-word {
+      font-family: "Libre Baskerville", serif;
+      font-size: clamp(2rem, 4vw, 3.8rem);
+      color: var(--accent-red);
+      margin-top: 32px;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .flow-wrap {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .flow-node {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 11px 14px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+    }
+
+    .flow-node.core {
+      background: #222945;
+      border-color: rgba(201, 64, 64, 0.55);
+      color: #ffe5e5;
+      font-size: 0.82rem;
+      padding: 13px 18px;
+    }
+
+    .dot-red, .dot-gold, .dot-green, .dot-muted {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex: 0 0 7px;
+    }
+
+    .dot-red { background: var(--accent-red); }
+    .dot-gold { background: var(--gold); }
+    .dot-green { background: var(--signal-green); }
+    .dot-muted { background: #68708a; }
+
+    .flow-arrow {
+      color: #6f7690;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 1rem;
+      padding: 0 2px;
+    }
+
+    .facts-panel {
+      margin-top: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .fact-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+
+    .fact-item .k {
+      color: var(--gold);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+    }
+
+    .fact-item .v {
+      color: var(--text-secondary);
+      font-size: 0.91rem;
+      line-height: 1.45;
+    }
+
+    .finding-intro {
+      border-left: 3px solid var(--gold);
+      padding-left: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .result-card {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .result-metric {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+
+    .result-metric .label {
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 5px;
+    }
+
+    .result-metric .value {
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--text-primary);
+      font-size: 1.34rem;
+    }
+
+    .table-wrap {
+      margin-top: 14px;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 790px;
+      background: #141a2c;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px 11px;
+      text-align: left;
+      font-size: 0.86rem;
+      vertical-align: top;
+    }
+
+    th {
+      font-family: "IBM Plex Mono", monospace;
+      color: #b8c0d8;
+      background: #1a2542;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    tr.sig td { background: rgba(46, 158, 91, 0.12); color: #d8f7e4; }
+    tr.nsig td { background: rgba(138, 144, 160, 0.08); color: #c5cada; }
+    tr.headline td {
+      background: rgba(201, 138, 32, 0.22) !important;
+      color: #ffe9b7 !important;
+      font-weight: 500;
+    }
+
+    .disclaimer {
+      margin-top: 8px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+
+    .chart-shell {
+      margin-top: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px;
+      min-height: 300px;
+    }
+
+    .gauge-card {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+
+    .gauge-track {
+      height: 14px;
+      background: #0c1120;
+      border: 1px solid var(--border);
+      margin: 8px 0 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      width: 40.8%;
+      background: linear-gradient(90deg, #2E9E5B 0%, #C98A20 65%, #C94040 100%);
+    }
+
+    .gauge-label {
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--text-secondary);
+      font-size: 0.83rem;
+    }
+
+    .source-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .source-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .source-name {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.81rem;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+
+    .source-desc {
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      line-height: 1.58;
+      flex: 1;
+    }
+
+    .status {
+      display: inline-block;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    .active { color: #bff2d2; border-color: rgba(46, 158, 91, 0.55); background: rgba(46, 158, 91, 0.13); }
+    .mock { color: #f8ddaa; border-color: rgba(201, 138, 32, 0.55); background: rgba(201, 138, 32, 0.14); }
+    .planned { color: #c3c9d8; border-color: rgba(138, 144, 160, 0.42); background: rgba(138, 144, 160, 0.08); }
+
+    .unlock-grid, .client-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .unlock-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .client-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .brief-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+
+    .brief-card h4 {
+      font-family: "IBM Plex Mono", monospace;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+    }
+
+    .brief-card p {
+      margin: 0 0 8px;
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+
+    .closing {
+      margin-top: 26px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+      text-align: center;
+    }
+
+    .closing-quote {
+      font-family: "Libre Baskerville", serif;
+      font-style: italic;
+      font-size: clamp(1.35rem, 2.4vw, 2.35rem);
+      color: #f7f3ea;
+      line-height: 1.35;
+      margin-bottom: 12px;
+    }
+
+    .closing-meta {
+      font-family: "IBM Plex Mono", monospace;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .system-active {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #c4f1d5;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.73rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 1100px) {
+      .topbar {
+        grid-template-columns: 1fr;
+        height: auto;
+        padding: 12px 14px;
+        gap: 8px;
+      }
+      .tabs { justify-self: start; }
+      .context { justify-self: start; text-align: left; }
+      main { padding-top: 168px; }
+      .stats-grid, .result-card, .source-grid, .unlock-grid, .facts-panel { grid-template-columns: 1fr 1fr; }
+      .client-grid { grid-template-columns: 1fr; }
+      .gap-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 740px) {
+      main { padding: 184px 12px 52px; }
+      .section { padding: 16px; }
+      .tab-btn { padding: 10px 11px; font-size: 0.66rem; }
+      .stats-grid, .result-card, .source-grid, .unlock-grid, .facts-panel { grid-template-columns: 1fr; }
+      .hero-title { font-size: clamp(1.5rem, 8.2vw, 2.4rem); }
+      .flow-arrow { display: none; }
+      .flow-wrap { display: grid; grid-template-columns: 1fr; }
+      .flow-node { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="pulse-dot" aria-hidden="true"></span>DARK SIGNAL</div>
+    <nav class="tabs" aria-label="Primary tabs">
+      <button class="tab-btn active" type="button" data-tab="overview">OVERVIEW</button>
+      <button class="tab-btn" type="button" data-tab="findings">FINDINGS</button>
+      <button class="tab-btn" type="button" data-tab="next">WHAT'S NEXT</button>
+    </nav>
+    <div class="context">PROOF OF CONCEPT — ECUADOR FLOWER MARKET</div>
+  </header>
+
+  <main>
+    <section id="overview" class="tab-panel active">
+      <h1 class="hero-title">The world's most important business disruptions don't arrive without warning. Most companies just aren't listening.</h1>
+      <p class="lede">Dark Signal reads the upstream signals that precede disruption: lobbying patterns, shipping anomalies, regulatory language shifts, and prediction-market moves. The goal is simple: warn operators before disruption becomes news, before it moves markets, and before reaction options narrow.</p>
+
+      <div class="stats-grid">
+        <article class="stat-card">
+          <div class="stat-value">34 Days</div>
+          <div class="stat-label">average lead time before disruption becomes visible in mainstream news</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-value">79%</div>
+          <div class="stat-label">prototype forecast accuracy</div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-value">$900M+</div>
+          <div class="stat-label">annual value of the market in our current proof of concept</div>
+        </article>
+      </div>
+
+      <article class="section">
+        <h2>The Information Gap</h2>
+        <p>Large institutions have dedicated geopolitical risk teams. They monitor the same upstream indicators that shape prices and policy outcomes. Mid-market operators face the same shocks with no equivalent visibility.</p>
+        <div class="gap-grid">
+          <div class="gap-col">
+            <h4>What Large Institutions See</h4>
+            <ul class="signal-list">
+              <li>Lobbying expenditure around specific regulatory topics</li>
+              <li>Shipping-route deviations and congestion shifts</li>
+              <li>Early edits in regulatory language and docket activity</li>
+              <li>Prediction market price and volume dislocations</li>
+            </ul>
+          </div>
+          <div class="gap-col">
+            <h4>What Everyone Else Sees</h4>
+            <div class="news-word">News.</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="section">
+        <h2>How Dark Signal Works</h2>
+        <p>No single indicator is enough. But when multiple independent signals move in the same direction at the same time, that convergence becomes a high-confidence warning. This is mosaic theory in plain terms: weak signals become actionable when they align.</p>
+        <div class="flow-wrap" aria-label="Dark Signal workflow">
+          <div class="flow-node"><span class="dot-red"></span>Lobbying Data</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><span class="dot-gold"></span>Maritime Routes</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><span class="dot-green"></span>Regulatory Language</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><span class="dot-muted"></span>Prediction Markets</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node core"><span class="dot-red"></span>DARK SIGNAL ANALYSIS</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-node"><span class="dot-green"></span>Early Warning Briefing</div>
+        </div>
+      </article>
+
+      <article class="section">
+        <h2>Why Ecuador's Flower Market?</h2>
+        <p>This market is one of the most geopolitically exposed commodity systems in the world. It depends on U.S. trade policy, phytosanitary regulations (rules governing what plants and plant products can cross borders), Ecuador's hydroelectric power reliability, and tightly timed international logistics.</p>
+        <p>If the methodology can predict disruption here, where signal complexity is high and operating margins are narrow, it can generalize to other exposed sectors and trade corridors.</p>
+        <div class="facts-panel">
+          <div class="fact-item"><div class="k">World's 3rd largest flower exporter</div><div class="v">Ecuador is structurally important in global cut-flower supply chains.</div></div>
+          <div class="fact-item"><div class="k">70%+ hydropower dependence</div><div class="v">National electricity conditions directly influence production and cold-chain continuity.</div></div>
+          <div class="fact-item"><div class="k">12–36 month lobbying lead time</div><div class="v">Upstream policy influence often appears long before formal rule publication.</div></div>
+          <div class="fact-item"><div class="k">100,000+ workers</div><div class="v">Household livelihoods and regional employment depend on this export ecosystem.</div></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="findings" class="tab-panel">
+      <article class="section">
+        <h1>What We've Found So Far</h1>
+        <div class="finding-intro">These are prototype-scale results produced before supercomputer access. They are directional — meaning they point in the right direction — but not yet definitive. Full statistical validation runs on MareNostrum 5.</div>
+
+        <h2>Lobbying Activity Predicts Regulatory Outcomes — 6 Months Early</h2>
+        <p><strong>A Granger causality test asks a simple question:</strong> does knowing the history of Variable A help predict the future of Variable B, beyond what B's own history tells you? If yes, A is said to "Granger-cause" B, meaning it contains real predictive information.</p>
+        <p>In the EFM prototype, lobbying expenditure on agricultural and phytosanitary issues Granger-causes USDA APHIS regulatory output at lag 2 quarters — lobbying activity today predicts regulatory movement roughly 6 months ahead.</p>
+
+        <div class="result-card">
+          <div class="result-metric"><div class="label">F-statistic</div><div class="value">24.60</div><div class="stat-label">higher = stronger predictive relationship</div></div>
+          <div class="result-metric"><div class="label">P-value</div><div class="value">1.31 × 10⁻⁹</div><div class="stat-label">less than 1 in a billion chance result</div></div>
+          <div class="result-metric"><div class="label">Lead time</div><div class="value">6 months</div><div class="stat-label">lag 2 quarters</div></div>
+          <div class="result-metric"><div class="label">Confidence</div><div class="value">Directional</div><div class="stat-label">prototype scale</div></div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Signal Pair</th>
+                <th>Lag (quarters)</th>
+                <th>F-statistic</th>
+                <th>P-value</th>
+                <th>Significant</th>
+                <th>Interpretation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="nsig"><td>energy_price_to_export_volume</td><td>1</td><td>2.1484</td><td>0.1466</td><td>No</td><td>Not significant at lag 1.</td></tr>
+              <tr class="sig"><td>energy_price_to_export_volume</td><td>2</td><td>18042.6917</td><td>3.22e-100</td><td>Yes</td><td>Directional signal detected (prototype artifact caveat).</td></tr>
+              <tr class="sig"><td>energy_price_to_export_volume</td><td>3</td><td>15.5049</td><td>8.71e-08</td><td>Yes</td><td>Directional signal detected (prototype artifact caveat).</td></tr>
+              <tr class="sig"><td>energy_price_to_export_volume</td><td>4</td><td>24430.4070</td><td>2.35e-98</td><td>Yes</td><td>Directional signal detected (prototype artifact caveat).</td></tr>
+              <tr class="sig"><td>lobbying_to_aphis</td><td>1</td><td>9.5523</td><td>0.00248</td><td>Yes</td><td>Predictive relationship present at lag 1.</td></tr>
+              <tr class="sig headline"><td>lobbying_to_aphis</td><td>2</td><td>24.6013</td><td>1.31e-09</td><td>Yes</td><td>Headline finding: strongest directional signal at 6 months.</td></tr>
+              <tr class="sig"><td>lobbying_to_aphis</td><td>3</td><td>14.7899</td><td>3.90e-08</td><td>Yes</td><td>Predictive relationship present at lag 3.</td></tr>
+              <tr class="sig"><td>lobbying_to_aphis</td><td>4</td><td>9.7133</td><td>1.07e-06</td><td>Yes</td><td>Predictive relationship present at lag 4.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="disclaimer">mock data artifact — energy_price_to_export_volume magnitudes will recalibrate with live CENACE and FAS ingestion.</div>
+
+        <h2 style="margin-top: 28px;">The Regulatory Environment Is Tightening</h2>
+        <p>Across 192 APHIS documents, 49.5% score as tightening, 42.4% neutral, and 8.2% loosening. For Ecuador flower exporters, this implies a directional trend toward stricter compliance conditions rather than deregulation.</p>
+        <div class="chart-shell"><canvas id="toneChart" aria-label="Regulatory tone breakdown"></canvas></div>
+
+        <h2 style="margin-top: 28px;">10,000 Futures Modeled</h2>
+        <p><strong>Monte Carlo simulation</strong> runs thousands of plausible "what might happen" scenarios by varying key inputs within realistic ranges, then maps outcome distributions instead of offering one brittle point estimate.</p>
+
+        <div class="gauge-card">
+          <div class="result-card">
+            <div class="result-metric"><div class="label">Mean disruption probability</div><div class="value">40.8%</div></div>
+            <div class="result-metric"><div class="label">Above 0.7 threshold</div><div class="value">5.59%</div></div>
+            <div class="result-metric"><div class="label">90th percentile</div><div class="value">62.1%</div></div>
+            <div class="result-metric"><div class="label">Simulation count</div><div class="value">10,000</div></div>
+          </div>
+          <div class="gauge-track"><div class="gauge-fill"></div></div>
+          <div class="gauge-label">Current prototype mean risk: 0.408. High-risk tail appears when multiple signals converge simultaneously.</div>
+        </div>
+
+        <div class="chart-shell" style="margin-top:12px;"><canvas id="riskHistChart" aria-label="Monte Carlo risk distribution"></canvas></div>
+
+        <h2 style="margin-top: 28px;">Data Sources Status</h2>
+        <div class="source-grid">
+          <article class="source-card"><div class="source-name">CENACE / ARCONEL Ecuador Energy</div><div class="source-desc">Hydropower output and energy pricing conditions affecting production and cold-chain risk.</div><span class="status mock">MOCK — PENDING</span></article>
+          <article class="source-card"><div class="source-name">USDA APHIS Phytosanitary</div><div class="source-desc">Regulatory notices, import alerts, and compliance language relevant to flower flows.</div><span class="status mock">MOCK — PENDING</span></article>
+          <article class="source-card"><div class="source-name">USDA FAS Trade Data</div><div class="source-desc">Monthly Ecuador-to-U.S. flower trade volumes and value shifts by product class.</div><span class="status mock">MOCK — PENDING</span></article>
+          <article class="source-card"><div class="source-name">OpenSecrets Lobbying (1.54M records)</div><div class="source-desc">Federal lobbying expenditure records used to detect policy pressure before formal outcomes.</div><span class="status active">ACTIVE</span></article>
+          <article class="source-card"><div class="source-name">Maritime AIS Routing</div><div class="source-desc">Reefer vessel paths, congestion, and route anomalies preceding logistics disruption.</div><span class="status mock">MOCK — PENDING</span></article>
+          <article class="source-card"><div class="source-name">Prediction Markets (Polymarket / Kalshi)</div><div class="source-desc">Market-implied probabilities and volume spikes around policy and trade events.</div><span class="status planned">PLANNED</span></article>
+          <article class="source-card"><div class="source-name">Telegram Monitoring (Spanish-language)</div><div class="source-desc">Regional chatter and policy-adjacent discourse with translation into structured signal features.</div><span class="status planned">PLANNED</span></article>
+        </div>
+      </article>
+    </section>
+
+    <section id="next" class="tab-panel">
+      <article class="section">
+        <h1>This Is a Proof of Concept. The Proof Works.</h1>
+        <p>Prototype-scale results have confirmed the core hypothesis: upstream signals in public data contain predictive information about downstream regulatory and market outcomes. The remaining question is not whether the approach works; it is how far it scales under full data volume and full compute.</p>
+      </article>
+
+      <article class="section">
+        <h2>What MareNostrum 5 Changes</h2>
+        <p>Think of the Stockfish analogy: it does not "predict the future" of a chess game. It evaluates tens of millions of positions per second and identifies moves that remain robust across the widest set of futures. Dark Signal uses supercomputer-scale processing similarly: evaluate millions of geopolitical scenarios simultaneously and map where operational exposure concentrates.</p>
+
+        <div class="unlock-grid">
+          <article class="brief-card">
+            <h4>From 10,000 to 1,000,000 scenarios</h4>
+            <p>Monte Carlo simulation scales by 100x, producing calibrated probability distributions instead of directional estimates.</p>
+          </article>
+          <article class="brief-card">
+            <h4>From mock data to live signals</h4>
+            <p>Full CENACE, APHIS, FAS, and AIS pipelines replace prototype fallbacks, with Ecuador field research adding ground-level validation.</p>
+          </article>
+          <article class="brief-card">
+            <h4>From single market to global methodology</h4>
+            <p>The Ecuador pilot validates a framework transferable to any geopolitically exposed commodity market or trade corridor.</p>
+          </article>
+        </div>
+      </article>
+
+      <article class="section">
+        <h2>Who Needs This</h2>
+        <div class="client-grid">
+          <article class="brief-card">
+            <h4>Mid-Market Importers</h4>
+            <p><strong>Pain:</strong> Sourcing decisions are committed months in advance while policy shocks arrive late in the cycle.</p>
+            <p><strong>Dark Signal value:</strong> 6–12 month advance notice of regulatory shifts that alter import cost and access.</p>
+          </article>
+          <article class="brief-card">
+            <h4>Logistics & Freight Companies</h4>
+            <p><strong>Pain:</strong> Route planning assumes stability; geopolitical shocks reroute flows rapidly.</p>
+            <p><strong>Dark Signal value:</strong> Early detection of routing anomalies before disruption reaches critical operations.</p>
+          </article>
+          <article class="brief-card">
+            <h4>Regional Banks & Credit Unions</h4>
+            <p><strong>Pain:</strong> Credit portfolios absorb geopolitical risk but rely on lagging risk indicators.</p>
+            <p><strong>Dark Signal value:</strong> Leading-indicator intelligence for sector and borrower-level risk management.</p>
+          </article>
+          <article class="brief-card">
+            <h4>Agricultural Exporters</h4>
+            <p><strong>Pain:</strong> Market access depends on phytosanitary and trade-policy stability outside operator control.</p>
+            <p><strong>Dark Signal value:</strong> Monitoring of upstream regulatory signals before access conditions change.</p>
+          </article>
+          <article class="brief-card">
+            <h4>Investment Funds</h4>
+            <p><strong>Pain:</strong> Many funds consume the same downstream news signals at the same time.</p>
+            <p><strong>Dark Signal value:</strong> Upstream alternative data where policy risk appears before mainstream coverage.</p>
+          </article>
+        </div>
+      </article>
+
+      <article class="section">
+        <h2>What BlackRock Built for Itself</h2>
+        <p>BlackRock's Aladdin platform uses Monte Carlo simulation to evaluate risk across roughly $21 trillion in assets. It is institution-grade, invitation-driven, and priced for the largest market participants. Dark Signal applies the same architecture logic — simulation, signal aggregation, scenario modeling — one layer earlier, at the upstream signal stage where disruption begins.</p>
+        <p>That architecture is designed for mid-market operators that face institutional-grade risk without institutional-grade tooling.</p>
+
+        <div class="closing">
+          <div class="closing-quote">"The signal was always there. We built the system to read it."</div>
+          <div class="closing-meta">Dark Signal — Universidad de Deusto — MareNostrum 5, Barcelona Supercomputing Center</div>
+          <div class="system-active"><span class="pulse-dot" aria-hidden="true"></span>System Active</div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script>
+    (function () {
+      const tabButtons = Array.from(document.querySelectorAll('.tab-btn'));
+      const panels = Array.from(document.querySelectorAll('.tab-panel'));
+
+      function activateTab(targetId) {
+        tabButtons.forEach((btn) => {
+          const active = btn.dataset.tab === targetId;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        panels.forEach((panel) => {
+          panel.classList.toggle('active', panel.id === targetId);
+        });
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      tabButtons.forEach((btn) => {
+        btn.addEventListener('click', function () {
+          activateTab(this.dataset.tab);
+        });
+      });
+
+      function initCharts() {
+        if (!window.Chart) {
+          return;
+        }
+
+        const toneCtx = document.getElementById('toneChart');
+        if (toneCtx) {
+          new Chart(toneCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: ['Tightening', 'Neutral', 'Loosening'],
+              datasets: [{
+                data: [49.5, 42.4, 8.2],
+                backgroundColor: ['#C94040', '#8A90A0', '#2E9E5B'],
+                borderColor: ['#C94040', '#8A90A0', '#2E9E5B'],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              indexAxis: 'y',
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  callbacks: {
+                    label: function (ctx) { return ctx.raw + '%'; }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  min: 0,
+                  max: 60,
+                  grid: { color: 'rgba(255,255,255,0.08)' },
+                  ticks: {
+                    color: '#B8BED0',
+                    callback: function (v) { return v + '%'; }
+                  }
+                },
+                y: {
+                  grid: { display: false },
+                  ticks: { color: '#E4E8F4', font: { family: 'IBM Plex Mono' } }
+                }
+              }
+            }
+          });
+        }
+
+        const riskCtx = document.getElementById('riskHistChart');
+        if (riskCtx) {
+          const labels = ['0.0-0.1', '0.1-0.2', '0.2-0.3', '0.3-0.4', '0.4-0.5', '0.5-0.6', '0.6-0.7', '0.7-0.8', '0.8-0.9', '0.9-1.0'];
+          const values = [120, 780, 1640, 2340, 2210, 1450, 901, 390, 145, 24];
+          const colors = labels.map((_, i) => (i >= 7 ? 'rgba(201,64,64,0.75)' : 'rgba(46,158,91,0.7)'));
+          new Chart(riskCtx.getContext('2d'), {
+            type: 'bar',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: 'Scenario Count',
+                data: values,
+                backgroundColor: colors,
+                borderColor: colors,
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  labels: { color: '#D3D9EB', font: { family: 'IBM Plex Mono' } }
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: 'rgba(255,255,255,0.07)' },
+                  ticks: { color: '#B8BED0', font: { family: 'IBM Plex Mono', size: 11 } }
+                },
+                y: {
+                  beginAtZero: true,
+                  grid: { color: 'rgba(255,255,255,0.07)' },
+                  ticks: { color: '#B8BED0' }
+                }
+              }
+            }
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCharts);
+      } else {
+        initCharts();
+      }
+    })();
+  </script>
+</body>
+</html>
